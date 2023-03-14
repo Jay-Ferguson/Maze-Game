@@ -1,6 +1,6 @@
 const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
-const cells = 3;
+const cells = 6;
 const width = 600;
 const height = 600;
 
@@ -77,7 +77,6 @@ const stepThroughCell = (row, column) => {
     [row + 1, column, "down"],
     [row, column - 1, "left"],
   ]);
-  console.log(neighbors);
 
   //For each neighbor...
   for (let neighbor of neighbors) {
@@ -126,10 +125,10 @@ horizontals.forEach((row, rowIndex) => {
       5,
       {
         isStatic: true,
+        label: 'wall',
       }
     );
     World.add(world, wall);
-    console.log(wall);
   });
 });
 
@@ -145,7 +144,8 @@ verticals.forEach((row, rowIndex) => {
       5,
       unitLength,
       {
-        isStatic: true,
+     label: "wall",
+     isStatic: true,
       }
     );
     World.add(world, wall);
@@ -173,8 +173,8 @@ const goal = Bodies.rectangle(
   unitLength * 0.7,
   unitLength * 0.7,
   {
-    label: "goal",
-    isStatic: true,
+    label: 'goal',
+    isStatic: true
   }
 );
 World.add(world, goal);
@@ -182,7 +182,7 @@ World.add(world, goal);
 //Ball
 
 const ball = Bodies.circle(unitLength / 2, unitLength / 2, unitLength / 4, {
-  label: "ball",
+  label: 'ball',
 });
 World.add(world, ball);
 
@@ -210,14 +210,22 @@ document.addEventListener("keydown", (event) => {
 
 //win condition
 
-Events.on(engine, "collisionStart", (event) => {
-  event.pairs.forEach((collision) => {
-      const labels = ['ball', 'goal'];
+Events.on(engine, 'collisionStart', event => {
+  event.pairs.forEach(collision => {
+    const labels = ["ball", "goal"];
 
-      if (label.includes(collision.bodyA.label) &&
+    if (
+      labels.includes(collision.bodyA.label) &&
       labels.includes(collision.bodyB.label)
-      ) {
-          
-      }
+    ) {
+      console.log("you won");
+      world.gravity.y = 1;
+      world.bodies.forEach(body => {
+          if (body.label === 'wall') {
+               Body.setStatic(body, false);
+              
+          }
+      })
+    }
   });
 });
